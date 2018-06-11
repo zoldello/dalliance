@@ -9,6 +9,8 @@
 
 "use strict";
 
+import {Range, intersection} from './spans';
+
 if (typeof(require) !== 'undefined') {
     var utils = require('./utils');
     var Awaited = utils.Awaited;
@@ -25,11 +27,6 @@ if (typeof(require) !== 'undefined') {
     var DummyFeatureSource = sa.DummyFeatureSource;
 
     var OverlayFeatureSource = require('./overlay').OverlayFeatureSource;
-
-    var spans = require('./spans');
-    var Range = spans.Range;
-    var union = spans.union;
-    var intersection = spans.intersection;
 
     var sample = require('./sample');
     var downsample = sample.downsample;

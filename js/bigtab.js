@@ -1,6 +1,6 @@
 /* -*- mode: javascript; c-basic-offset: 4; indent-tabs-mode: nil -*- */
 
-// 
+//
 // Dalliance Genome Explorer
 // (c) Thomas Down 2006-2010
 //
@@ -9,11 +9,9 @@
 
 "use strict";
 
-if (typeof(module) !== 'undefined') {
-    var bin = require('./bin');
-    var readInt = bin.readInt;
-    var readShort = bin.readShort;
+import {readInt,  readShort} from './bin';
 
+if (typeof(module) !== 'undefined') {
     var zlib = require('jszlib');
     var jszlib_inflate_buffer = zlib.inflateBuffer;
 }
@@ -30,7 +28,7 @@ function bwg_readOffset(ba, o) {
 
 var BIGTAB_MAGIC = 0x8789F2EB;
 var BPT_MAGIC    = 0x78ca8c91;
-  
+
 function BigTab(data) {
     this.data = data;
 }
@@ -105,7 +103,7 @@ BPTIndex.prototype.lookup = function(name, callback) {
         if (bptMagic != BPT_MAGIC) {
             return callback(null, 'Not a valid BPT, magic=0x' + bptMagic.toString(16));
         }
-        
+
         function bptReadNode(nodeOffset) {
             thisB.data.slice(nodeOffset, 4 + (blockSize * (keySize + valSize))).fetch(function(node) {
                 var ba = new Uint8Array(node);
@@ -129,7 +127,7 @@ BPTIndex.prototype.lookup = function(name, callback) {
 
                         var childOffset = readInt(ba, offset);
                         offset += 8;
-                        
+
                         if (name.localeCompare(key) < 0 && lastChildOffset) {
                             bptReadNode(lastChildOffset);
                             return;
@@ -194,4 +192,3 @@ if (typeof(module) !== 'undefined') {
         connectBigTab: connectBigTab
     };
 }
-

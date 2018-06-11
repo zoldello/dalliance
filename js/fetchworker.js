@@ -1,6 +1,6 @@
 /* -*- mode: javascript; c-basic-offset: 4; indent-tabs-mode: nil -*- */
 
-// 
+//
 // Dalliance Genome Explorer
 // (c) Thomas Down 2006-2014
 //
@@ -9,8 +9,9 @@
 
 "use strict";
 
-var bin = require('./bin');
-var bam = require('./bam');
+import {BlobFetchable, URLFetchable} from './bin';
+import {makeBam} from './bam';
+
 var bigwig = require('./bigwig');
 var encode = require('./encode');
 var utils = require('./utils');
@@ -41,7 +42,7 @@ self.onmessage = function(event) {
             } else {
                 rr.resolve(d.url);
             }
-                
+
             delete resolveResolvers[tag];
         }
     } else if (command === 'connectBAM') {
@@ -52,15 +53,15 @@ self.onmessage = function(event) {
         }
         var bamF, baiF, indexChunks;
         if (d.blob) {
-            bamF = new bin.BlobFetchable(d.blob);
-            baiF = new bin.BlobFetchable(d.indexBlob);
+            bamF = new BlobFetchable(d.blob);
+            baiF = new BlobFetchable(d.indexBlob);
         } else {
-            bamF = new bin.URLFetchable(d.uri, {credentials: d.credentials, resolver: resolver});
-            baiF = new bin.URLFetchable(d.indexUri, {credentials: d.credentials, resolver: resolver});
+            bamF = new URLFetchable(d.uri, {credentials: d.credentials, resolver: resolver});
+            baiF = new URLFetchable(d.indexUri, {credentials: d.credentials, resolver: resolver});
             indexChunks = d.indexChunks;
         }
 
-        bam.makeBam(bamF, baiF, indexChunks, function(bamObj, err) {
+        makeBam(bamF, baiF, indexChunks, function(bamObj, err) {
             if (bamObj) {
                 connections[id] = new BAMWorkerFetcher(bamObj);
                 postMessage({tag: tag, result: id});
@@ -76,11 +77,11 @@ self.onmessage = function(event) {
         }
         var bbi;
         if (d.blob) {
-            bbi = new bin.BlobFetchable(d.blob);
+            bbi = new BlobFetchable(d.blob);
         } else if (d.transport == 'encode') {
             bbi = new encode.EncodeFetchable(d.uri, {credentials: d.credentials});
         } else {
-            bbi = new bin.URLFetchable(d.uri, {credentials: d.credentials, resolver: resolver});
+            bbi = new URLFetchable(d.uri, {credentials: d.credentials, resolver: resolver});
         }
 
         bigwig.makeBwg(bbi, function(bwg, err) {

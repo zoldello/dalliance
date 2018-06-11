@@ -1,6 +1,6 @@
 /* -*- mode: javascript; c-basic-offset: 4; indent-tabs-mode: nil -*- */
 
-// 
+//
 // Dalliance Genome Explorer
 // (c) Thomas Down 2006-2010
 //
@@ -8,12 +8,9 @@
 //
 
 "use strict";
+import {Range, union} from './spans';
 
 if (typeof(require) !== 'undefined') {
-    var spans = require('./spans');
-    var union = spans.union;
-    var Range = spans.Range;
-
     var utils = require('./utils');
     var makeElementNS = utils.makeElementNS;
     var AMINO_ACID_TRANSLATION = utils.AMINO_ACID_TRANSLATION;
@@ -46,7 +43,7 @@ PathGlyphBase.prototype.draw = function(g) {
 PathGlyphBase.prototype.toSVG = function() {
     var g = new SVGPath();
     this.drawPath(g);
-    
+
     return makeElementNS(
         NS_SVG, 'path',
         null,
@@ -90,7 +87,7 @@ BoxGlyph.prototype.draw = function(g) {
             g.save();
             g.globalAlpha = this._alpha;
         }
-        
+
         if (this.fill) {
             g.fillStyle = this.fill;
             g.fill();
@@ -129,9 +126,9 @@ BoxGlyph.prototype.draw = function(g) {
 
 BoxGlyph.prototype.toSVG = function() {
     var s = makeElementNS(NS_SVG, 'rect', null,
-                         {x: this.x, 
-                          y: this.y, 
-                          width: this._width, 
+                         {x: this.x,
+                          y: this.y,
+                          width: this._width,
                           height: this._height,
                           stroke: this.stroke || 'none',
                           strokeWidth: 0.5,
@@ -179,7 +176,7 @@ GroupGlyph.prototype.drawConnectors = function(g) {
             var start = last.max();
             var end = gl.min();
             var mid = (start+end)/2
-            
+
             if (this.connector === 'hat+') {
                 g.moveTo(start, this.h/2);
                 g.lineTo(mid, 0);
@@ -308,7 +305,7 @@ LineGraphGlyph.prototype.toSVG = function() {
             p.lineTo(x, y);
         }
     }
-    
+
     return makeElementNS(
         NS_SVG, 'path',
         null,
@@ -343,7 +340,7 @@ function LabelledGlyph(GLOBAL_GC, glyph, text, unmeasured, anchor, align, font) 
 LabelledGlyph.prototype.toSVG = function() {
     var child = this.glyph.toSVG();
     var opts = {};
-    
+
     if (this.align == 'above') {
         child = makeElementNS(NS_SVG, 'g', child, {transform: "translate(0, " + (this.textHeight|0 + 2) + ")"});
         opts.y = this.textHeight;
@@ -433,7 +430,7 @@ function CrossGlyph(x, height, stroke) {
 
 CrossGlyph.prototype.draw = function(g) {
     var hh = this._height/2;
-    
+
     g.beginPath();
     g.moveTo(this._x, 0);
     g.lineTo(this._x, this._height);
@@ -454,7 +451,7 @@ CrossGlyph.prototype.toSVG = function() {
     g.lineTo(this._x, this._height);
     g.moveTo(this._x - hh, hh);
     g.lineTo(this._x + hh, hh);
-    
+
     return makeElementNS(
         NS_SVG, 'path',
         null,
@@ -484,7 +481,7 @@ function ExGlyph(x, height, stroke) {
 
 ExGlyph.prototype.draw = function(g) {
     var hh = this._height/2;
-    
+
     g.beginPath();
     g.moveTo(this._x - hh, 0);
     g.lineTo(this._x + hh, this._height);
@@ -505,7 +502,7 @@ ExGlyph.prototype.toSVG = function() {
     g.lineTo(this._x + hh, this._height);
     g.moveTo(this._x - hh, this._height);
     g.lineTo(this._x + hh, 0);
-    
+
     return makeElementNS(
         NS_SVG, 'path',
         null,
@@ -638,7 +635,7 @@ function PaddedGlyph(glyph, minp, maxp) {
 }
 
 PaddedGlyph.prototype.draw = function(g, oc) {
-    if (this.glyph) 
+    if (this.glyph)
         this.glyph.draw(g, oc);
 }
 
@@ -794,7 +791,7 @@ LineGlyph.prototype.draw = function(g) {
 LineGlyph.prototype.toSVG = function() {
     var g = new SVGPath();
     this.drawPath(g);
-    
+
     var opts = {d: g.toPathData(),
             stroke: this._stroke || 'none'};
     if (this._style === 'dashed') {
@@ -861,7 +858,7 @@ PrimersGlyph.prototype.toSVG = function() {
     this.drawStemPath(s);
     var t = new SVGPath();
     this.drawTrigsPath(t);
-    
+
     return makeElementNS(
         NS_SVG, 'g',
         [makeElementNS(
@@ -895,7 +892,7 @@ ArrowGlyph.prototype.height = function() {return this._height};
 
 ArrowGlyph.prototype.drawPath = function(g) {
     var min = this._min, max = this._max, height = this._height;
-    
+
     if (this._parallel) {
         var hh = height/2;
         var instep = 0.4 * height;
@@ -964,9 +961,9 @@ TooManyGlyph.prototype.height = function() {return this._height};
 
 TooManyGlyph.prototype.toSVG = function() {
     return makeElementNS(NS_SVG, 'rect', null,
-                         {x: this._min, 
-                          y: 0, 
-                          width: this._max - this._min, 
+                         {x: this._min,
+                          y: 0,
+                          width: this._max - this._min,
                           height: this._height,
                           stroke: this._stroke || 'none',
                           fill: this._fill || 'none'});
@@ -1072,7 +1069,7 @@ AminoAcidGlyph.prototype.draw = function(gc) {
     var prevOverhang = (3 - this._readframe) % 3;
     var nextOverhang = (seq.length - prevOverhang) % 3;
     var leftOverhang = this._orientation == '+' ? prevOverhang : nextOverhang;
-    
+
     if (leftOverhang > 0) {
         gc.fillStyle = color;
         gc.fillRect(this._min, 0, scale * leftOverhang, this._height);
@@ -1090,7 +1087,7 @@ AminoAcidGlyph.prototype.draw = function(gc) {
         if (scale >= 8 && codon.length == 3) {
             gc.fillStyle = 'white';
             gc.fillText(aa, this._min + (p+1) * scale, this._height);
-        } 
+        }
     }
 }
 
@@ -1177,7 +1174,7 @@ SequenceGlyph.prototype.draw = function(gc) {
     var ref = this._ref;
     var mismatch = this._scheme === 'mismatch' || this._scheme === 'mismatch-all';
     var all = this._scheme === 'mismatch-all';
-    
+
     var seqLength = seq ? seq.length : (this._max - this._min + 1);
     var scale = (this._max - this._min + 1) / seqLength;
 
@@ -1189,10 +1186,10 @@ SequenceGlyph.prototype.draw = function(gc) {
             gc.fillRect(this._min, this._height/4, this._max - this._min, this._height/2);
     }
 
-    
+
     for (var p = 0; p < seqLength; ++p) {
         var base = seq ? seq.substr(p, 1).toUpperCase() : 'N';
-        
+
         if (!altPattern.test(base) && !isCloseUp(scale))
             continue;
 
@@ -1250,7 +1247,7 @@ SequenceGlyph.prototype.draw = function(gc) {
                 gc.drawImage(img, this._min + p*scale + 0.5*(scale-8), dy, 8, 10);
             else
                 gc.drawImage(img, this._min + p*scale + 0.5*(scale-8), dy);
-        } 
+        }
 
         if (this._quals) {
             gc.globalAlpha = oldAlpha;
@@ -1264,7 +1261,7 @@ SequenceGlyph.prototype.toSVG = function() {
     var mismatch = this._scheme === 'mismatch' || this._scheme === 'mismatch-all';
     var all = this._scheme === 'mismatch-all';
     var scale = (this._max - this._min + 1) / this._seq.length;
-    var  g = makeElementNS(NS_SVG, 'g'); 
+    var  g = makeElementNS(NS_SVG, 'g');
 
     for (var p = 0; p < seq.length; ++p) {
         var base = seq ? seq.substr(p, 1).toUpperCase() : 'N';
@@ -1437,7 +1434,7 @@ GridGlyph.prototype.toSVG = function() {
         p.moveTo(-5000, y);
         p.lineTo(5000, y);
     }
-    
+
     return makeElementNS(
         NS_SVG, 'path',
         null,
@@ -1517,7 +1514,7 @@ PlimsollGlyph.prototype.draw = function(g) {
 
 PlimsollGlyph.prototype.toSVG = function() {
     var hh = this._hh;
-    return makeElementNS(NS_SVG, 'g', 
+    return makeElementNS(NS_SVG, 'g',
         [makeElementNS(NS_SVG, 'circle', null, {cx: this._x, cy: hh, r: hh - this._overhang}),
          makeElementNS(NS_SVG, 'line', null, {x1: this._x, y1: 0, x2: this._x, y2: this._height})],
         {fill: this._fill || 'none',

@@ -1,6 +1,6 @@
 /* -*- mode: javascript; c-basic-offset: 4; indent-tabs-mode: nil -*- */
 
-// 
+//
 // Dalliance Genome Explorer
 // (c) Thomas Down 2006-2013
 //
@@ -8,6 +8,10 @@
 //
 
 "use strict";
+
+import sha1 from './sha1';
+
+const hexSha1 = sha1.hexSha1;
 
 if (typeof(require) != 'undefined') {
     var browser = require('./cbrowser');
@@ -22,8 +26,6 @@ if (typeof(require) != 'undefined') {
     var utils = require('./utils');
     var miniJSONify = utils.miniJSONify;
 
-    var sha1 = require('./sha1');
-    var hex_sha1 = sha1.hex_sha1;
 }
 
 Browser.prototype.nukeStatus = function() {
@@ -112,14 +114,14 @@ Browser.prototype.storeTierStatus = function() {
 
     localStorage['dalliance.' + this.cookieKey + '.export-ruler'] = this.exportRuler;
     localStorage['dalliance.' + this.cookieKey + '.export-highlights'] = this.exportHighlights;
-    
+
     localStorage['dalliance.' + this.cookieKey + '.version'] = VERSION.CONFIG;
 }
 
 Browser.prototype.restoreStatus = function() {
     if (this.noPersist)
         return;
-    
+
     var storedConfigVersion = localStorage['dalliance.' + this.cookieKey + '.version'];
     if (storedConfigVersion) {
         storedConfigVersion = storedConfigVersion|0;
@@ -131,7 +133,7 @@ Browser.prototype.restoreStatus = function() {
     }
 
     var storedConfigHash = localStorage['dalliance.' + this.cookieKey + '.configHash'] || '';
-    var pageConfigHash = hex_sha1(miniJSONify({
+    var pageConfigHash = hexSha1(miniJSONify({
         sources: this.sources,
         hubs: this.hubs,
         rulerLocation: this.rulerLocation
@@ -152,7 +154,7 @@ Browser.prototype.restoreStatus = function() {
         if (!ul)
             defaultSourcesByURI[uri] = ul = [];
         ul.push(source);
-        
+
     }
 
     if (!this.noPersistView) {
@@ -163,7 +165,7 @@ Browser.prototype.restoreStatus = function() {
         	this.chr = qChr;
         	this.viewStart = qMin;
         	this.viewEnd = qMax;
-        	
+
         	var csm = localStorage['dalliance.' + this.cookieKey + '.current-seq-length'];
         	if (csm) {
         	    this.currentSeqMax = csm|0;
@@ -184,7 +186,7 @@ Browser.prototype.restoreStatus = function() {
     this.reverseKeyScrolling = (rks && rks == 'true');
     var sbh = localStorage['dalliance.' + this.cookieKey + '.single-base-highlight'];
     this.singleBaseHighlight = (sbh && sbh == 'true');
- 
+
     var rl = localStorage['dalliance.' + this.cookieKey + '.ruler-location'];
     if (rl)
         this.rulerLocation = rl;
@@ -206,11 +208,11 @@ Browser.prototype.restoreStatus = function() {
             this.restoredConfigs[si] = storedSources[si].config;
             var uri = sourceDataURI(source);
             var ul = defaultSourcesByURI[uri] || [];
-            for (var osi = 0; osi < ul.length; ++osi) {    
+            for (var osi = 0; osi < ul.length; ++osi) {
                 var oldSource = ul[osi];
                 if (sourcesAreEqual(source, oldSource)) {
                     for (var k in oldSource) {
-                        if (oldSource.hasOwnProperty(k) && 
+                        if (oldSource.hasOwnProperty(k) &&
                             (typeof(oldSource[k]) === 'function' || oldSource[k] instanceof Blob))
                         {
                             source[k] = oldSource[k];
@@ -239,7 +241,7 @@ Browser.prototype.reset = function() {
     }
     for (var i = 0; i < this.defaultSources.length; ++i) {
         var s = this.defaultSources[i];
-        if (!s.disabled) 
+        if (!s.disabled)
             this.addTier(this.defaultSources[i]);
     }
 

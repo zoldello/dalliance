@@ -1,6 +1,6 @@
 /* -*- mode: javascript; c-basic-offset: 4; indent-tabs-mode: nil -*- */
 
-// 
+//
 // Dalliance Genome Explorer
 // (c) Thomas Down 2006-2010
 //
@@ -8,6 +8,8 @@
 //
 
 "use strict";
+
+import {URLFetchable} from './bin';
 
 if (typeof(require) !== 'undefined') {
     var das = require('./das');
@@ -19,9 +21,6 @@ if (typeof(require) !== 'undefined') {
     var shallowCopy = utils.shallowCopy;
 
     var parseCigar = require('./cigar').parseCigar;
-
-    var bin = require('./bin');
-    var URLFetchable = bin.URLFetchable;
 
     var bbi = require('./bigwig');
     var makeBwg = bbi.makeBwg;
@@ -174,8 +173,8 @@ Chainset.prototype.unmapPoint = function(chr, pos) {
                 cpos = c.destMax - pos;
             } else {
                 cpos = pos - c.destMin;
-            }    
-            
+            }
+
             var blocks = c.blocks;
             for (var bi = 0; bi < blocks.length; ++bi) {
                 var b = blocks[bi];
@@ -226,8 +225,8 @@ Chainset.prototype.sourceBlocksForRange = function(chr, min, max, callback) {
     if (needsNewOrPending) {
         if (!this.postFetchQueues[chr]) {
             this.chainFetcher.fetchChains(
-                chr, 
-                minTile * this.granularity, 
+                chr,
+                minTile * this.granularity,
                 (maxTile+1) * this.granularity - 1)
               .then(function(chains) {
                 if (!thisCS.chainsByDest)
@@ -284,7 +283,7 @@ Chainset.prototype.sourceBlocksForRange = function(chr, min, max, callback) {
                 }
               }).catch(function (err) {
                 console.log(err);
-              });   
+              });
         }
 
         pusho(this.postFetchQueues, chr, function() {
@@ -414,8 +413,8 @@ function BBIChainFetcher(uri, credentials) {
     this.credentials = credentials;
 
     this.bwg = new Promise(function(resolve, reject) {
-        makeBwg(new URLFetchable(self.uri, {credentials: self.credentials, 
-                                            resolver: self.resolver}), 
+        makeBwg(new URLFetchable(self.uri, {credentials: self.credentials,
+                                            resolver: self.resolver}),
           function(bwg, err) {
             if (bwg) {
                 resolve(bwg);

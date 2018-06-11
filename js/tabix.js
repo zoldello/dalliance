@@ -1,6 +1,6 @@
 /* -*- mode: javascript; c-basic-offset: 4; indent-tabs-mode: nil -*- */
 
-// 
+//
 // Dalliance Genome Explorer
 // (c) Thomas Down 2006-2011
 //
@@ -9,27 +9,11 @@
 
 "use strict";
 
-var TABIX_MAGIC = 0x01494254;
+import {readInt} from './bin';
+import {readVob, unbgzf, reg2bins, Chunk} from './lh3utils';
 
-if (typeof(require) !== 'undefined') {
-    var spans = require('./spans');
-    var Range = spans.Range;
-    var union = spans.union;
-    var intersection = spans.intersection;
+const TABIX_MAGIC = 0x01494254;
 
-    var bin = require('./bin');
-    var readInt = bin.readInt;
-    var readShort = bin.readShort;
-    var readByte = bin.readByte;
-    var readInt64 = bin.readInt64;
-    var readFloat = bin.readFloat;
-
-    var lh3utils = require('./lh3utils');
-    var readVob = lh3utils.readVob;
-    var unbgzf = lh3utils.unbgzf;
-    var reg2bins = lh3utils.reg2bins;
-    var Chunk = lh3utils.Chunk;
-}
 
 function TabixFile() {
 }
@@ -95,7 +79,7 @@ function connectTabix(data, tbi, callback) {
                 p += 8 + (nchnk * 16);
             }
             var nintv = readInt(uncba, p); p += 4;
-            
+
             var q = p;
             for (var i = 0; i < nintv; ++i) {
                 var v = readVob(uncba, q); q += 8;
@@ -115,7 +99,7 @@ function connectTabix(data, tbi, callback) {
             var ub = uncba;
             if (nbin > 0) {
                 tabix.indices[ref] = new Uint8Array(unchead, blockStart, p - blockStart);
-            }                     
+            }
         }
 
         tabix.headerMax = minBlockIndex;
@@ -169,7 +153,7 @@ TabixFile.prototype.blocksForRange = function(refId, min, max) {
             lowest = lb;
         }
     }
-    
+
     var prunedOtherChunks = [];
     if (lowest != null) {
         for (var i = 0; i < otherChunks.length; ++i) {
@@ -178,7 +162,7 @@ TabixFile.prototype.blocksForRange = function(refId, min, max) {
                 prunedOtherChunks.push(chnk);
             }
         }
-    } 
+    }
     otherChunks = prunedOtherChunks;
 
     var intChunks = [];

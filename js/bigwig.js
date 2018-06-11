@@ -1,6 +1,6 @@
 /* -*- mode: javascript; c-basic-offset: 4; indent-tabs-mode: nil -*- */
 
-// 
+//
 // Dalliance Genome Explorer
 // (c) Thomas Down 2006-2010
 //
@@ -9,22 +9,16 @@
 
 "use strict";
 
+import {readInt} from './bin';
+import {Range, union, intersection} from './spans';
 
 if (typeof(require) !== 'undefined') {
-    var spans = require('./spans');
-    var Range = spans.Range;
-    var union = spans.union;
-    var intersection = spans.intersection;
-
     var das = require('./das');
     var DASFeature = das.DASFeature;
     var DASGroup = das.DASGroup;
 
     var utils = require('./utils');
     var shallowCopy = utils.shallowCopy;
-
-    var bin = require('./bin');
-    var readInt = bin.readInt;
 
     var jszlib = require('jszlib');
     var jszlib_inflate_buffer = jszlib.inflateBuffer;
@@ -40,7 +34,7 @@ var BIG_BED_MAGIC_BE = 0xEBF28987;
 var BIG_WIG_TYPE_GRAPH = 1;
 var BIG_WIG_TYPE_VSTEP = 2;
 var BIG_WIG_TYPE_FSTEP = 3;
-  
+
 var M1 = 256;
 var M2 = 256*256;
 var M3 = 256*256*256;
@@ -176,7 +170,7 @@ BigWigView.prototype.readWigDataById = function(chr, min, max, callback) {
             var blockSpan = new Range(offset[i], offset[i] + maxCirBlockSpan);
             spans = spans ? union(spans, blockSpan) : blockSpan;
         }
-        
+
         var fetchRanges = spans.ranges();
         for (var r = 0; r < fetchRanges.length; ++r) {
             var fr = fetchRanges[r];
@@ -269,18 +263,18 @@ BigWigView.prototype.fetchFeatures = function(filter, blocksToFetch, callback) {
             if (!opts) {
                 opts = {};
             }
-        
+
             var f = new DASFeature();
             f._chromId = chr;
             f.segment = thisB.bwg.idsToChroms[chr];
             f.min = fmin;
             f.max = fmax;
             f.type = thisB.bwg.type;
-            
+
             for (var k in opts) {
                 f[k] = opts[k];
             }
-            
+
             features.push(f);
         };
 
@@ -310,7 +304,7 @@ BigWigView.prototype.fetchFeatures = function(filter, blocksToFetch, callback) {
                         var bi = 0;
                         while (offset < fetchSize) {
                             var fb = blocksToFetch[bi];
-                        
+
                             var data;
                             if (thisB.bwg.uncompressBufSize > 0) {
                                 data = jszlib_inflate_buffer(result, offset + 2, fb.size - 2);
@@ -320,7 +314,7 @@ BigWigView.prototype.fetchFeatures = function(filter, blocksToFetch, callback) {
                                 data = tmp.buffer;
                             }
                             fb.data = data;
-                            
+
                             offset += fb.size;
                             ++bi;
                         }
@@ -351,7 +345,7 @@ BigWigView.prototype.parseFeatures = function(data, createFeature, filter) {
             var maxVal    = fa[(i*8)+5];
             var sumData   = fa[(i*8)+6];
             var sumSqData = fa[(i*8)+7];
-            
+
             if (filter(chromId, start + 1, end)) {
                 var summaryOpts = {type: 'bigwig', score: sumData/validCnt, maxScore: maxVal};
                 if (this.bwg.type == 'bigbed') {
@@ -372,7 +366,7 @@ BigWigView.prototype.parseFeatures = function(data, createFeature, filter) {
         var itemSpan = la[4];
         var blockType = ba[20];
         var itemCount = sa[11];
-        
+
         if (blockType == BIG_WIG_TYPE_FSTEP) {
             for (var i = 0; i < itemCount; ++i) {
                 var score = fa[i + 6];
@@ -423,7 +417,7 @@ BigWigView.prototype.parseFeatures = function(data, createFeature, filter) {
             }
 
             var featureOpts = {};
-            
+
             var bedColumns;
             if (rest.length > 0) {
                 bedColumns = rest.split('\t');
@@ -468,7 +462,7 @@ BigWigView.prototype.parseFeatures = function(data, createFeature, filter) {
                         var exonFrames = featureOpts.exonFrames.split(',');
                         featureOpts.exonFrames = undefined;
                     }
-                    
+
                     featureOpts.type = 'transcript'
                     var grp = new DASGroup();
                     for (var k in featureOpts) {
@@ -508,7 +502,7 @@ BigWigView.prototype.parseFeatures = function(data, createFeature, filter) {
                         spanList.push(span);
                     }
                     var spans = union(spanList);
-                    
+
                     var tsList = spans.ranges();
                     for (var s = 0; s < tsList.length; ++s) {
                         var ts = tsList[s];
@@ -602,7 +596,7 @@ BigWigView.prototype.getFirstAdjacentById = function(chr, pos, dir, callback) {
             var blockSpan = new Range(offset[i], offset[i] + maxCirBlockSpan);
             spans = spans ? union(spans, blockSpan) : blockSpan;
         }
-        
+
         var fetchRanges = spans.ranges();
         for (var r = 0; r < fetchRanges.length; ++r) {
             var fr = fetchRanges[r];
@@ -643,7 +637,7 @@ BigWigView.prototype.getFirstAdjacentById = function(chr, pos, dir, callback) {
                                 }
                             }
 
-                            if (bestFeature != null) 
+                            if (bestFeature != null)
                                 return callback([bestFeature]);
                             else
                                 return callback([]);
@@ -718,7 +712,7 @@ BigWigView.prototype.getFirstAdjacentById = function(chr, pos, dir, callback) {
             }
         }
     };
-    
+
 
     cirFobRecur([thisB.cirTreeOffset + 48], 1);
 }
@@ -767,10 +761,10 @@ function makeBwg(data, callback, name) {
             bwg.type = 'bigbed';
         } else if (magic == BIG_WIG_MAGIC_BE || magic == BIG_BED_MAGIC_BE) {
             return callback(null, "Currently don't support big-endian BBI files");
-            
+
         } else {
             return callback(null, "Not a supported format, magic=0x" + magic.toString(16));
-            
+
         }
 
         bwg.version = sa[2];             // 4
@@ -840,11 +834,11 @@ BigWig.prototype.thresholdSearch = function(chrName, referencePoint, dir, thresh
     var candidates = [{chrOrd: 0, chr: initialChr, zoom: bwg.zoomLevels.length - 4, min: 0, max: 300000000, fromRef: true}]
     for (var i = 1; i <= this.maxID + 1; ++i) {
         var chrId = (initialChr + (dir*i)) % (this.maxID + 1);
-        if (chrId < 0) 
+        if (chrId < 0)
             chrId += (this.maxID + 1);
         candidates.push({chrOrd: i, chr: chrId, zoom: bwg.zoomLevels.length - 1, min: 0, max: 300000000})
     }
-       
+
     function fbThresholdSearchRecur() {
     	if (candidates.length == 0) {
     	    return callback(null);
@@ -866,7 +860,7 @@ BigWig.prototype.thresholdSearch = function(chrName, referencePoint, dir, thresh
             var rp = dir > 0 ? 0 : 300000000;
             if (candidate.fromRef)
                 rp = referencePoint;
-            
+
             for (var fi = 0; fi < feats.length; ++fi) {
     	        var f = feats[fi];
                 var score;
@@ -898,7 +892,7 @@ BigWig.prototype.thresholdSearch = function(chrName, referencePoint, dir, thresh
             fbThresholdSearchRecur();
         });
     }
-    
+
     fbThresholdSearchRecur();
 }
 
@@ -916,8 +910,8 @@ BigWig.prototype.getAutoSQL = function(callback) {
                 break;
             s += String.fromCharCode(ba[i]);
         }
-        
-        /* 
+
+        /*
          * Quick'n'dirty attempt to parse autoSql format.
          * See: http://www.linuxjournal.com/files/linuxjournal.com/linuxjournal/articles/059/5949/5949l2.html
          */
@@ -960,7 +954,7 @@ BigWig.prototype.getExtraIndices = function(callback) {
             var ba = new Uint8Array(result);
             var sa = new Int16Array(result);
             var la = new Int32Array(result);
-            
+
             var extHeaderSize = sa[0];
             var extraIndexCount = sa[1];
             var extraIndexListOffset = bwg_readOffset(ba, 4);
@@ -1041,7 +1035,7 @@ BBIExtraIndex.prototype.lookup = function(name, callback) {
 
                         var childOffset = bwg_readOffset(ba, offset);
                         offset += 8;
-                        
+
                         if (name.localeCompare(key) < 0 && lastChildOffset) {
                             bptReadNode(lastChildOffset);
                             return;
@@ -1058,7 +1052,7 @@ BBIExtraIndex.prototype.lookup = function(name, callback) {
                                 key += String.fromCharCode(charCode);
                             }
                         }
-                        
+
                         // Specific for EI case.
                         if (key == name) {
                             var start = bwg_readOffset(ba, offset);
@@ -1068,8 +1062,8 @@ BBIExtraIndex.prototype.lookup = function(name, callback) {
                                 function(chr, min, max, toks) {
                                     if (toks && toks.length > thisB.field - 3)
                                         return toks[thisB.field - 3] == name;
-                                }, 
-                                [{offset: start, size: length}], 
+                                },
+                                [{offset: start, size: length}],
                                 callback);
                         }
                         offset += valSize;

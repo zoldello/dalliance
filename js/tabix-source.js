@@ -1,6 +1,6 @@
 /* -*- mode: javascript; c-basic-offset: 4; indent-tabs-mode: nil -*- */
 
-// 
+//
 // Dalliance Genome Explorer
 // (c) Thomas Down 2006-2013
 //
@@ -9,15 +9,13 @@
 
 "use strict";
 
+import {URLFetchable,  BlobFetchable} from './bin';
+
 if (typeof(require) !== 'undefined') {
     var sa = require('./sourceadapters');
     var dalliance_registerSourceAdapterFactory = sa.registerSourceAdapterFactory;
     var dalliance_makeParser = sa.makeParser;
     var FeatureSourceBase = sa.FeatureSourceBase;
-
-    var bin = require('./bin');
-    var URLFetchable = bin.URLFetchable;
-    var BlobFetchable = bin.BlobFetchable;
 
     var utils = require('./utils');
     var Awaited = utils.Awaited;
@@ -47,7 +45,7 @@ function TabixFeatureSource(source) {
         index = new BlobFetchable(this.source.indexBlob);
     } else {
         data = new URLFetchable(this.source.uri, {credentials: this.source.credentials, resolver: this.source.resolver});
-        index = new URLFetchable(this.source.indexURI || (this.source.uri + '.tbi'), 
+        index = new URLFetchable(this.source.indexURI || (this.source.uri + '.tbi'),
                                  {credentials: this.source.credentials, resolver: this.source.resolver});
     }
     connectTabix(data, index, function(tabix, err) {
@@ -70,10 +68,10 @@ TabixFeatureSource.prototype = Object.create(FeatureSourceBase.prototype);
 
 TabixFeatureSource.prototype.fetch = function(chr, min, max, scale, types, pool, callback) {
     var thisB = this;
-    
+
     thisB.busy++;
     thisB.notifyActivity();
-    
+
     this.tabixHolder.await(function(tabix) {
         tabix.fetch(chr, min, max, function(records, error) {
             thisB.busy--;

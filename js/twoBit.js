@@ -1,6 +1,6 @@
 /* -*- mode: javascript; c-basic-offset: 4; indent-tabs-mode: nil -*- */
 
-// 
+//
 // Dalliance Genome Explorer
 // (c) Thomas Down 2006-2010
 //
@@ -9,22 +9,12 @@
 
 "use strict";
 
-if (typeof(require) !== 'undefined') {
-    var bin = require('./bin');
-    var readInt = bin.readInt;
-    var readIntBE = bin.readIntBE;
-    var readInt64BE = bin.readInt64BE,
-        readInt64LE = bin.readInt64LE;
+import {readInt, readIntBE, readInt64BE, readInt64LE} from './bin';
+import {Range, union, intersection} from './spans';
 
-    var spans = require('./spans');
-    var Range = spans.Range;
-    var union = spans.union;
-    var intersection = spans.intersection;
-}
-
-var TWOBIT_MAGIC = 0x1a412743;
-var TWOBIT_MAGIC_BE = 0x4327411a;
-var HEADER_BLOCK_SIZE = 12500;
+const TWOBIT_MAGIC = 0x1a412743;
+const TWOBIT_MAGIC_BE = 0x4327411a;
+const HEADER_BLOCK_SIZE = 12500;
 
 function TwoBitFile() {
 }
@@ -34,7 +24,7 @@ function makeTwoBit(fetchable, cnt) {
     tb.data = fetchable;
     var headerBlockSize = HEADER_BLOCK_SIZE;
     var headerBlocksFetched=0;
-    
+
     tb.data.slice(0, headerBlockSize).fetch(function(r) {
         if (!r) {
             return cnt(null, "Couldn't access data");
@@ -95,7 +85,7 @@ function makeTwoBit(fetchable, cnt) {
         }
 
         parseSeqInfo();
-        
+
     });
 }
 
@@ -190,7 +180,7 @@ TwoBitSeq.prototype.fetch = function(min, max, cnt) {
                     nSpans = intr.ranges();
                 }
             }
-            
+
             var seqstr = '';
             var ptr = min;
             function fillSeq(fsm) {
@@ -212,7 +202,7 @@ TwoBitSeq.prototype.fetch = function(min, max, cnt) {
                     ++ptr;
                 }
             }
-            
+
             for (var b = 0; b < nSpans.length; ++b) {
                 var nb = nSpans[b];
                 if (ptr > nb.min()) {

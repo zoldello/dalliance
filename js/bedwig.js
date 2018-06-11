@@ -1,6 +1,6 @@
 /* -*- mode: javascript; c-basic-offset: 4; indent-tabs-mode: nil -*- */
 
-// 
+//
 // Dalliance Genome Explorer
 // (c) Thomas Down 2006-2014
 //
@@ -9,11 +9,9 @@
 
 "use strict";
 
+import {Range, union, intersection} from './spans';
+
 if (typeof(require) !== 'undefined') {
-    var spans = require('./spans');
-    var Range = spans.Range;
-    var union = spans.union;
-    var intersection = spans.intersection;
 
     var sa = require('./sourceadapters');
     var dalliance_registerParserFactory = sa.registerParserFactory;
@@ -57,7 +55,7 @@ BedParseSession.prototype.parse = function(line) {
     var start = parseInt(toks[1]) + 1;
     var end = parseInt(toks[2]);
 
-    var f = {segment: toks[0], 
+    var f = {segment: toks[0],
              min: start,
              max: end};
 
@@ -95,7 +93,7 @@ BedParseSession.prototype.parse = function(line) {
             grp.type = 'transcript'
             grp.notes = [];
             f.groups = [grp];
-            
+
             if (toks.length > 12) {
                 var geneId = toks[12];
                 var geneName = geneId;
@@ -107,8 +105,8 @@ BedParseSession.prototype.parse = function(line) {
                 gg.label = geneName;
                 gg.type = 'gene';
                 f.groups.push(gg);
-            }  
-            
+            }
+
             var spans = null;
             for (var b = 0; b < blockCount; ++b) {
             var bmin = blockStarts[b] + start;
@@ -120,7 +118,7 @@ BedParseSession.prototype.parse = function(line) {
                     spans = span;
                 }
             }
-                    
+
             var tsList = spans.ranges();
             for (var s = 0; s < tsList.length; ++s) {
                 var ts = tsList[s];
@@ -131,11 +129,11 @@ BedParseSession.prototype.parse = function(line) {
             }
 
             if (thickEnd > thickStart) {
-                var codingRegion = (f.orientation == '+') ? 
-                    new Range(thickStart, thickEnd + 3) : 
+                var codingRegion = (f.orientation == '+') ?
+                    new Range(thickStart, thickEnd + 3) :
                     new Range(thickStart - 3, thickEnd);
                 // +/- 3 to account for stop codon
-                
+
                 var tl = intersection(spans, codingRegion);
                 if (tl) {
                     f.type = 'translation';
@@ -213,8 +211,8 @@ WigParseSession.prototype.parse = function(line) {
             if (toks.length < 4)
                 return;
 
-            var f = {segment: toks[0], 
-                     min: parseInt(toks[1]) + 1, 
+            var f = {segment: toks[0],
+                     min: parseInt(toks[1]) + 1,
                      max: parseInt(toks[2]),
                      score: parseFloat(toks[3])};
 
@@ -268,7 +266,7 @@ BedWigParser.prototype.getStyleSheet = function(callback) {
         wigStyle.BUMP = true;
         wigStyle.ZINDEX = 20;
         stylesheet.pushStyle({type: 'translation'}, null, wigStyle);
-                
+
         var tsStyle = new DASStyle();
         tsStyle.glyph = 'BOX';
         tsStyle.FGCOLOR = 'black';

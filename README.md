@@ -1,6 +1,14 @@
 Biodalliance: fast, embeddable genome visualization
 =========================
 
+Re-work in Progress
+-------------------
+
+I am exploring the code base and and thinking about ways to modernize it and
+tweak it. This is the initial exploration. 
+
+
+
 Dalliance is a genome viewing tool that aims to offer a high
 level of interactivity while working entirely within your web
 browser. It works with current versions of Chrome, Firefox, and

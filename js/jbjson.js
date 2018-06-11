@@ -1,11 +1,13 @@
 /* -*- mode: javascript; c-basic-offset: 4; indent-tabs-mode: nil -*- */
 
-// 
+//
 // Dalliance Genome Explorer
 // (c) Thomas Down 2006-2013
 //
 // jbjson.js -- query JBrowse-style REST data stores
 //
+
+import {Range, union, intersection} from './spans';
 
 if (typeof(require) !== 'undefined') {
     var das = require('./das');
@@ -16,11 +18,6 @@ if (typeof(require) !== 'undefined') {
 
     var utils = require('./utils');
     var shallowCopy = utils.shallowCopy;
-
-    var spans = require('./spans');
-    var Range = spans.Range;
-    var union = spans.union;
-    var intersection = spans.intersection;
 }
 
 function JBrowseStore(base, query) {
@@ -62,7 +59,7 @@ JBrowseStore.prototype.features = function(segment, opts, callback) {
 		var features = [];
 		for (fi = 0; fi < jf.length; ++fi) {
 		    var j = jf[fi];
-		    
+
 		    var f = new DASFeature();
 		    f.segment = segment.name;
 		    f.min = (j['start'] | 0) + 1;
@@ -93,7 +90,7 @@ JBrowseStore.prototype.features = function(segment, opts, callback) {
                             if (sj.type === 'CDS')
                                 cds.push(sf);
                         }
-                        
+
                         if (cds.length > 0) {
                             spans = union(blocks);
                             var txGroup = shallowCopy(f);
@@ -127,9 +124,9 @@ JBrowseStore.prototype.features = function(segment, opts, callback) {
 		callback(features);
 	    }
 	}
-	
+
     };
-    
+
     req.open('GET', url, true);
     req.responseType = 'text';
     req.send();

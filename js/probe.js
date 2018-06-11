@@ -1,6 +1,6 @@
 /* -*- mode: javascript; c-basic-offset: 4; indent-tabs-mode: nil -*- */
 
-// 
+//
 // Dalliance Genome Explorer
 // (c) Thomas Down 2006-2014
 //
@@ -9,22 +9,14 @@
 
 "use strict";
 
-if (typeof(require) !== 'undefined') {
-    var bin = require('./bin');
-    var URLFetchable = bin.URLFetchable;
-    var BlobFetchable = bin.BlobFetchable;
-    var readInt = bin.readInt;
+import {URLFetchable, BlobFetchable, readInt} from './bin';
+import {unbgzf} from './lh3utils';
+import {BAM_MAGIC,  BAI_MAGIC} from './bam'
 
+if (typeof(require) !== 'undefined') {
     var bbi = require('./bigwig');
     var BIG_WIG_MAGIC = bbi.BIG_WIG_MAGIC;
     var BIG_BED_MAGIC = bbi.BIG_BED_MAGIC;
-
-    var lh3utils = require('./lh3utils');
-    var unbgzf = lh3utils.unbgzf;
-
-    var bam = require('./bam');
-    var BAM_MAGIC = bam.BAM_MAGIC;
-    var BAI_MAGIC = bam.BAI_MAGIC;
 
     var tbi = require('./tabix');
     var TABIX_MAGIC = tbi.TABIX_MAGIC;

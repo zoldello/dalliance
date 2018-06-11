@@ -1,20 +1,19 @@
 /* -*- mode: javascript; c-basic-offset: 4; indent-tabs-mode: nil -*- */
 
-// 
+//
 // Dalliance Genome Explorer
 // (c) Thomas Down 2006-2010
+//
+// Updated by Philip Adenekan to ES6, in 2018
 //
 // utils.js: odds, sods, and ends.
 //
 
-"use strict";
+import sha1 from './sha1';
 
-if (typeof(require) !== 'undefined') {
-    var sha1 = require('./sha1');
-    var b64_sha1 = sha1.b64_sha1;
-}
+const b64Sha1 = sha1.b64Sha1;
 
-var NUM_REGEXP = new RegExp('[0-9]+');
+const NUM_REGEXP = new RegExp('[0-9]+');
 
 function stringToNumbersArray(str) {
     var nums = new Array();
@@ -149,7 +148,7 @@ function makeElement(tag, children, attribs, styles)
             }
         }
     }
-    
+
     if (attribs) {
         for (var l in attribs) {
             try {
@@ -183,7 +182,7 @@ function makeElementNS(namespace, tag, children, attribs)
             ele.appendChild(c);
         }
     }
-    
+
     setAttrs(ele, attribs);
     return ele;
 }
@@ -338,11 +337,11 @@ Awaited.prototype.await = function(f) {
 var __dalliance_saltSeed = 0;
 
 function saltURL(url) {
-    return url + '?salt=' + b64_sha1('' + Date.now() + ',' + (++__dalliance_saltSeed));
+    return url + '?salt=' + b64Sha1('' + Date.now() + ',' + (++__dalliance_saltSeed));
 }
 
 function textXHR(url, callback, opts) {
-    if (opts && opts.salt) 
+    if (opts && opts.salt)
         url = saltURL(url);
 
     try {
@@ -370,7 +369,7 @@ function textXHR(url, callback, opts) {
     	        }
     	    }
         };
-        
+
         req.open('GET', url, true);
         req.responseType = 'text';
 
@@ -471,7 +470,7 @@ function resolveUrlToPage(rel) {
 
 //
 // Missing APIs
-// 
+//
 
 if (!('trim' in String.prototype)) {
     String.prototype.trim = function() {

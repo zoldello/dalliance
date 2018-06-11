@@ -8,6 +8,10 @@
 //
 
 "use strict";
+import {unbgzf} from './lh3utils';
+import {URLFetchable, BlobFetchable, readInt} from './bin';
+import {BAI_MAGIC} from './bam';
+
 
 if (typeof(require) !== 'undefined') {
     var browser = require('./cbrowser');
@@ -29,20 +33,6 @@ if (typeof(require) !== 'undefined') {
     var makeTreeTableSection = domui.makeTreeTableSection;
 
     var probeResource = require('./probe').probeResource;
-
-
-    // Most of this could disappear if we leave all probing to the probe module...
-    var bin = require('./bin');
-    var URLFetchable = bin.URLFetchable;
-    var BlobFetchable = bin.BlobFetchable;
-    var readInt = bin.readInt;
-
-    var lh3utils = require('./lh3utils');
-    var unbgzf = lh3utils.unbgzf;
-
-    var bam = require('./bam');
-    var BAM_MAGIC = bam.BAM_MAGIC;
-    var BAI_MAGIC = bam.BAI_MAGIC;
 
     var tbi = require('./tabix');
     var TABIX_MAGIC = tbi.TABIX_MAGIC;

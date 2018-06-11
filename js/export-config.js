@@ -1,11 +1,16 @@
 /* -*- mode: javascript; c-basic-offset: 4; indent-tabs-mode: nil -*- */
 
-// 
+//
 // Dalliance Genome Explorer
 // (c) Thomas Down 2006-2014
 //
 // export-config.js
 //
+
+
+import sha1 from './sha1';
+
+const hexSha1 = sha1.hexSha1;
 
 if (typeof(require) !== 'undefined') {
     var browser = require('./cbrowser');
@@ -13,9 +18,6 @@ if (typeof(require) !== 'undefined') {
 
     var utils = require('./utils');
     var shallowCopy = utils.shallowCopy;
-
-    var sha1 = require('./sha1');
-    var hex_sha1 = sha1.hex_sha1;
 
     var das = require('./das');
     var copyStylesheet = das.copyStylesheet;
@@ -28,7 +30,7 @@ Browser.prototype.exportFullConfig = function(opts) {
         chr: this.chr,
         viewStart: this.viewStart|0,
         viewEnd: this.viewEnd|0,
-        cookieKey: 'dalliance_' + hex_sha1(Date.now()),
+        cookieKey: 'dalliance_' + hexSha1(Date.now()),
 
         coordSystem: this.coordSystem,
 
@@ -109,7 +111,7 @@ Browser.prototype.exportPageTemplate = function(opts) {
                    '    <script language="javascript" src="' + this.resolveURL('$$dalliance-compiled.js') + '"></script>\n' +
                    '    <script language="javascript">\n' +
                    '      var dalliance_browser = new Browser(' + JSON.stringify(this.exportFullConfig(opts), null, 2) + ');\n' +
-                   '    </script>\n' +  
+                   '    </script>\n' +
                    '  </head>\n' +
                    '  <body>\n' +
                    '    <div id="svgHolder">Dalliance goes here</div>\n' +

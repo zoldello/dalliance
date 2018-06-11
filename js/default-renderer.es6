@@ -1,28 +1,16 @@
 /* jshint esversion: 6 */
-"use strict";
 
 import { SubTier } from "./feature-draw.js";
-
 import { drawSeqTier } from "./sequence-draw.js";
-
-
 import { Range, union } from "./spans.js";
-
 import { shallowCopy, pusho } from "./utils.js";
-
-
 import * as Glyphs from "./glyphs.js";
-
 import { isDasBooleanTrue,
          isDasBooleanNotFalse,
          DASFeature } from "./das.js";
-
 import { makeGradient } from "./color.js";
-
 import { parseCigar } from "./cigar.js";
-
 import { formatQuantLabel } from "./numformats";
-
 import * as R from "ramda";
 
 // The only functions that must be exported by a renderer are renderTier
@@ -180,7 +168,7 @@ function glyphForFeature(canvas, feature, y, style, tier, forceHeight, noLabel) 
         glyphType === 'PLIMSOLL') {
         const glyphHolder = featureToCrossLikeGlyph(canvas, tier, feature, y,
                                                  glyphType, style, forceHeight, noLabel);
-        if (glyphHolder) {                                                 
+        if (glyphHolder) {
             [glyph, quant] = glyphHolder;
         }
     } else if (glyphType === 'HISTOGRAM' || glyphType === 'GRADIENT' && score !== 'undefined') {
@@ -278,7 +266,7 @@ function glyphForFeature(canvas, feature, y, style, tier, forceHeight, noLabel) 
 
     if (!glyph)
         return;
-    
+
     if ((isDasBooleanTrue(style.LABEL) || feature.forceLabel) &&
         label && !noLabel) {
         glyph = new Glyphs.LabelledGlyph(canvas, glyph, label, false);
@@ -334,7 +322,7 @@ function groupFeatures(tier, canvas, y) {
     if (stackedFeatures.length > 0) {
         glyphs = glyphs.concat(makeStackedBars(stackedFeatures, tier));
     }
-    
+
     for (let gbs in gbsFeatures) {
         let gf = gbsFeatures[gbs];
         let style = gbsStyles[gbs];
@@ -405,7 +393,7 @@ function bumpSubtiers(tier, glyphs, grid, gridOffset, gridSpacing) {
     });
 
     unbumpedST.glyphs.sort((g1, g2) => g1.min() - g2.min());
-    
+
     if (unbumpedST.glyphs.length > 0) {
         bumpedSTs = [unbumpedST].concat(bumpedSTs);
     }
@@ -1334,7 +1322,7 @@ function paintQuant(canvas, tier, quant, tics) {
 
 function featureLookup(tier, rx, ry) {
     var st = tier.subtiers;
-    if (!st) {           
+    if (!st) {
         return;
     }
 
@@ -1347,7 +1335,7 @@ function featureLookup(tier, rx, ry) {
     if (sti >= st.length) {
         return;
     }
-    
+
     var glyphs = st[sti].glyphs;
     var viewCenter = (tier.browser.viewStart + tier.browser.viewEnd)/2;
     var offset = (tier.glyphCacheOrigin - tier.browser.viewStart)*tier.browser.scale;

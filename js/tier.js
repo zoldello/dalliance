@@ -1,6 +1,6 @@
 /* -*- mode: javascript; c-basic-offset: 4; indent-tabs-mode: nil -*- */
 
-// 
+//
 // Dalliance Genome Explorer
 // (c) Thomas Down 2006-2010
 //
@@ -8,6 +8,10 @@
 //
 
 "use strict";
+
+import sha1 from './sha1';
+
+const b64Sha1 = sha1.b64Sha1;
 
 if (typeof(require) !== 'undefined') {
     var utils = require('./utils');
@@ -21,9 +25,6 @@ if (typeof(require) !== 'undefined') {
     var das = require('./das');
     var DASStylesheet = das.DASStylesheet;
     var DASStyle = das.DASStyle;
-
-    var sha1 = require('./sha1');
-    var b64_sha1 = sha1.b64_sha1;
 
     var style = require('./style');
     var StyleFilter = style.StyleFilter;
@@ -47,13 +48,13 @@ function DasTier(browser, source, config, background)
     this.dasSource = shallowCopy(source);
     this.background = background;
 
-    this.viewport = makeElement('canvas', null, 
-                                {width: '' + ((this.browser.featurePanelWidth|0) + 2000), 
+    this.viewport = makeElement('canvas', null,
+                                {width: '' + ((this.browser.featurePanelWidth|0) + 2000),
                                  height: "30",
                                  className: 'viewport_12_5'},
                                 {position: 'inline-block',
                                  margin: '0px', border: '0px'});
-    this.viewportHolder = makeElement('div', this.viewport, {className: 'viewport-holder_12_5'}, 
+    this.viewportHolder = makeElement('div', this.viewport, {className: 'viewport-holder_12_5'},
                                       {background: background,
                                        position: 'absolute',
                                        padding: '0px', margin: '0px',
@@ -61,14 +62,14 @@ function DasTier(browser, source, config, background)
                                        left: '-1000px',
                                        minHeight: '200px'});
     this.overlay = makeElement('canvas', null,
-         {width: + ((this.browser.featurePanelWidth|0)), 
+         {width: + ((this.browser.featurePanelWidth|0)),
           height: "30",
           className: 'viewport-overlay'});
 
     this.notifier = makeElement('div', '', {className: 'notifier'});
     this.notifierHolder = makeElement('div', this.notifier, {className: 'notifier-holder'});
     this.quantOverlay = makeElement(
-        'canvas', null, 
+        'canvas', null,
         {width: '50', height: "56",
          className: 'quant-overlay'});
 
@@ -110,7 +111,7 @@ function DasTier(browser, source, config, background)
     if (!browser.noDefaultLabels)
         this.row.appendChild(this.label);
     this.row.appendChild(this.notifierHolder);
-    
+
     this.layoutHeight = 25;
     this.bumped = true;
     this.styleIdSeed = 0;
@@ -129,7 +130,7 @@ function DasTier(browser, source, config, background)
     this.initSources();
 
     var thisB = this;
-    
+
 
     if (this.featureSource && this.featureSource.addReadinessListener) {
         this.readinessListener = function(ready) {
@@ -190,7 +191,7 @@ DasTier.prototype.toString = function() {
 }
 
 DasTier.prototype.addFeatureInfoPlugin = function(p) {
-    if (!this.featureInfoPlugins) 
+    if (!this.featureInfoPlugins)
         this.featureInfoPlugins = [];
     this.featureInfoPlugins.push(p);
 }
@@ -206,7 +207,7 @@ DasTier.prototype.addDescriptionContent = function(content) {
 DasTier.prototype.init = function() {
     var tier = this;
     return new Promise(function (resolve, reject) {
-        
+
         if (tier.dasSource.style) {
             tier.setStylesheet({styles: tier.dasSource.style});
             resolve(tier);
@@ -245,7 +246,7 @@ DasTier.prototype.setStylesheet = function(ss) {
         sh.style = shallowCopy(sh.style);
         sh.style.id = 'style' + (++this.styleIdSeed);
     }
-    this.baseStylesheetValidity = b64_sha1(miniJSONify(this.baseStylesheet));
+    this.baseStylesheetValidity = b64Sha1(miniJSONify(this.baseStylesheet));
     this._updateFromConfig();
 }
 
@@ -296,10 +297,10 @@ DasTier.prototype.needsSequence = function(scale) {
 
 DasTier.prototype.setFeatures = function(chr, coverage, scale, features, sequence) {
     this.currentFeatures = features;
-    this.currentSequence = sequence;    
+    this.currentSequence = sequence;
     this.knownChr = chr;
     this.knownCoverage = coverage;
-    
+
 
     // only notify features loaded, if they are valid
     if (features) {
@@ -337,11 +338,11 @@ DasTier.prototype.findNextFeature = function(chr, pos, dir, fedge, callback) {
                                 bestFeature = f;
                             }
                         } else if (f.max < pos) {
-                            if (!bestFeature || f.max > bestFeature.max || 
+                            if (!bestFeature || f.max > bestFeature.max ||
                                 (f.max == bestFeature.max && f.min < bestFeature.min) ||
                                 (f.min == bestFeature.mmin && bestFeature.max >= pos)) {
                                 bestFeature = f;
-                            } 
+                            }
                         }
                     } else {
                         if (fedge == 1 && f.min <= pos && f.max > pos) {
@@ -414,7 +415,7 @@ DasTier.prototype.drawOverlay = function() {
     var b = this.browser;
     var retina = b.retina && window.devicePixelRatio > 1;
     var height = t.viewport.getBoundingClientRect().height;
-    
+
     t.overlay.height = retina ? height * 2 : height;
     t.overlay.width = retina ? b.featurePanelWidth * 2 : b.featurePanelWidth;
 
@@ -422,7 +423,7 @@ DasTier.prototype.drawOverlay = function() {
     if (retina) {
         g.scale(2, 2);
     }
-    
+
     var origin = b.viewStart;
     var visStart = b.viewStart;
     var visEnd = b.viewEnd;
@@ -448,7 +449,7 @@ DasTier.prototype.drawOverlay = function() {
                        (h.max - h.min) * b.scale,
                        t.overlay.height);
         }
-    } 
+    }
 
     // t.oorigin = b.viewStart;
     t.overlay.style.width = b.featurePanelWidth;
@@ -540,7 +541,7 @@ DasTier.prototype.setConfig = function(config) {
 
 DasTier.prototype.mergeStylesheet = function(newStyle) {
     this.mergeConfig({
-        stylesheet: newStyle, 
+        stylesheet: newStyle,
         stylesheetValidity: this.baseStylesheetValidity
     });
 }
@@ -583,7 +584,7 @@ DasTier.prototype._updateFromConfig = function() {
         this.forceMaxDynamic = this.config.forceMaxDynamic;
         needsRefresh = true;
     }
-    
+
     var forceMax = this.config.forceMax != undefined ? this.config.forceMax : this.dasSource.forceMax;
     if (this.forceMax != forceMax) {
         this.forceMax = forceMax;
@@ -599,7 +600,7 @@ DasTier.prototype._updateFromConfig = function() {
         this.quantLeapThreshold = quantLeapThreshold;
         needsRefresh = true;
     }
-    
+
     // Possible FIXME -- are there cases where style IDs need to be reassigned?
     var stylesheet = null;
     if (this.config.stylesheetValidity == this.baseStylesheetValidity)
@@ -616,7 +617,7 @@ DasTier.prototype._updateFromConfig = function() {
         needsReorder = true;
     }
 
-    var wantedSubtierMax = (typeof(this.config.subtierMax === 'number') ? 
+    var wantedSubtierMax = (typeof(this.config.subtierMax === 'number') ?
         this.config.subtierMax : this.dasSource.subtierMax || this.browser.defaultSubtierMax);
     if (wantedSubtierMax != this.subtierMax) {
         this.subtierMax = wantedSubtierMax;
@@ -647,7 +648,7 @@ DasTier.prototype._updateFromConfig = function() {
 DasTier.prototype.scheduleRedraw = function() {
     if (!this.currentFeatures)
         return;
-    
+
     var tier = this;
 
     if (!this.redrawTimeout) {

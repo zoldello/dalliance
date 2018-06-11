@@ -9,6 +9,10 @@
 
 "use strict";
 
+import sha1 from './sha1';
+
+const hexSha1 = sha1.hexSha1;
+
 if (typeof(require) !== 'undefined') {
     var utils = require('./utils');
     var Observed = utils.Observed;
@@ -22,9 +26,6 @@ if (typeof(require) !== 'undefined') {
 
     var tier = require('./tier');
     var DasTier = tier.DasTier;
-
-    var sha1 = require('./sha1');
-    var hex_sha1 = sha1.hex_sha1;
 
     var thub = require('./thub');
     var connectTrackHub = thub.connectTrackHub;
@@ -358,10 +359,11 @@ Browser.prototype.realInit = function() {
     this.tierHolderHolder.appendChild(this.ruler2);
     this.chainConfigs = this.chains || {};
     this.chains = {};
+    
     for (var k in this.chainConfigs) {
         var cc = this.chainConfigs[k];
         if (cc instanceof Chainset) {
-            console.log('WARNING: Should no longer use "new Chainset" in Biodalliance configurations.');
+            console.warn('WARNING: Should no longer use "new Chainset" in Biodalliance configurations.');
         }
         this.chains[k] = new Chainset(cc);
     }
@@ -851,7 +853,7 @@ Browser.prototype.realInit2 = function() {
             thisB.refreshTier(t, null, true)
         }));
         thisB.setSelectedTier(1);
-        
+
         // Ping any init listeners.
         for (var ii = 0; ii < thisB.initListeners.length; ++ii) {
             try {
@@ -1528,7 +1530,7 @@ Browser.prototype.queryRegistry = function(maybeMapping, tryCache) {
         coords = this.coordSystem;
         msh = this.availableSources;
     }
-    var cacheHash = hex_sha1(miniJSONify(coords));
+    var cacheHash = hexSha1(miniJSONify(coords));
     if (tryCache) {
         var cacheTime = localStorage['dalliance.registry.' + cacheHash + '.last_queried'];
         if (cacheTime) {
