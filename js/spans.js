@@ -68,14 +68,15 @@ class _Compound {
 			}
 		});
 		merged.push(current);
-		this.ranges = merged;
+		this._ranges = merged;
 	}
+
 	min() {
-		return this.ranges[0].min();
+		return this._ranges[0].min();
 	}
 
 	max() {
-		return this.ranges[this.ranges.length - 1].max();
+		return this._ranges[this._ranges.length - 1].max();
 	}
 
 	lower_bound(pos) {
@@ -112,7 +113,7 @@ class _Compound {
 	contains(pos) {
 		let lb = this.lower_bound(pos);
 
-		if (lb < this.ranges.length && this.ranges[lb].contains(pos)) {
+		if (lb < this._ranges.length && this._ranges[lb].contains(pos)) {
 			return true;
 		}
 
@@ -123,8 +124,8 @@ class _Compound {
 		// FIXME: Correct modifying argument
 		const lb = this.lower_bound(range._min);
 
-		if (lb === this.ranges.length) { // range follows this
-			this.ranges.push(range);
+		if (lb === this._ranges.length) { // range follows this
+			this._ranges.push(range);
 
 			return;
 		}
@@ -132,7 +133,7 @@ class _Compound {
 		let r = this.ranges();
 
 		if (range._max < r[lb]._min) { // range preceeds lb
-			this.ranges.splice(lb, 0, range);
+			this._ranges.splice(lb, 0, range);
 
 			return;
 		}
@@ -156,34 +157,34 @@ class _Compound {
 		}
 
 		// splice range into this.ranges
-		this.ranges.splice(lb, ub - lb + 1, range);
+		this._ranges.splice(lb, ub - lb + 1, range);
 
 		return;
 	}
 
 	isContiguous() {
-		return this.ranges.length > 1;
+		return this._ranges.length > 1;
 	}
 
 	ranges() {
-		return this.ranges;
+		return this._ranges;
 	}
 
 	_pushRanges(ranges) {
-		for (let ri = 0; ri < this.ranges.length; ++ri) {
-			ranges.push(this.ranges[ri]);
+		for (let ri = 0; ri < this._ranges.length; ++ri) {
+			ranges.push(this._ranges[ri]);
 		}
 	}
 
 	toString() {
 		let s = '';
 
-		for (let r = 0; r < this.ranges.length; ++r) {
+		for (let r = 0; r < this._ranges.length; ++r) {
 			// FIXME: Use .join and then .toString rather than concentenate
 			if (r > 0) {
 				s = s + ',';
 			}
-			s = s + this.ranges[r].toString();
+			s = s + this._ranges[r].toString();
 		}
 		return s;
 	}
